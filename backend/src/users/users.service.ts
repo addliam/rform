@@ -20,6 +20,7 @@ export class UsersService {
     return this.usersRepository.find();
   }
   findOne(id: string) {
+    // return all belong to author
     return `Esto retornaria el usuario con id ${id}`;
   }
   deleteOne(id: string) {

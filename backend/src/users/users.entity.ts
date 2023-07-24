@@ -3,7 +3,9 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Form } from 'src/form/entities/form.entity';
 
 @Entity()
 export class Users {
@@ -21,4 +23,7 @@ export class Users {
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
+
+  // @OneToMany((type) => Form, (form) => form.user_id)
+  // forms: Form[];
 }

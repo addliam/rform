@@ -6,8 +6,11 @@ import { UsersService } from './users/users.service';
 // typeormmodule for ddbb configuration
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './users/users.entity';
+import { Form } from './form/entities/form.entity';
 import { DataSource } from 'typeorm';
 import { UsersModule } from './users/users.module';
+import { FormModule } from './form/form.module';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -17,10 +20,11 @@ import { UsersModule } from './users/users.module';
       username: 'postgres',
       password: 'TryHackM3',
       database: 'rform',
-      entities: [Users],
+      entities: [Users, Form],
       // synchronize: true,
     }),
     UsersModule,
+    FormModule,
   ],
   controllers: [AppController],
   providers: [AppService],
