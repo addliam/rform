@@ -1,19 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from './users.entity';
-// import { User } from './interfaces/users.interface';
+import { CreateUserDTO } from './create-user.dto';
+
 @Injectable()
 export class UsersService {
-  //   private readonly users: User[] = [];
   constructor(
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
   ) {}
 
-  create() {
-    // this.users.push(user);
-    return 'Esto crea un nuevo usuario';
+  create(name: string, lastname: string, email: string): Promise<Users> {
+    const newUser = this.usersRepository.create({ name, lastname, email });
+    return this.usersRepository.save(newUser);
   }
   findAll() {
     // return 'Esto retorna una lista de usuarios';

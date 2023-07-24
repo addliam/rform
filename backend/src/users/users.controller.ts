@@ -26,8 +26,12 @@ export class UsersController {
   }
 
   @Post()
-  async create() {
-    return this.usersService.create();
+  async create(@Body() createUserDTO: CreateUserDTO) {
+    return this.usersService.create(
+      createUserDTO.name,
+      createUserDTO.lastname,
+      createUserDTO.email,
+    );
   }
 
   @Delete(':id')
