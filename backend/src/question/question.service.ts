@@ -36,6 +36,10 @@ export class QuestionService {
     return this.questionRepository.find();
   }
 
+  async getQuestionsByFormId(formId: number): Promise<Question[]> {
+    return this.questionRepository.find({ where: { form_id: formId } });
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} question`;
   }

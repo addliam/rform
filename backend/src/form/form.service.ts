@@ -12,10 +12,6 @@ export class FormService {
     private formRepository: Repository<Form>,
   ) {}
 
-  // create(name: string, lastname: string, email: string): Promise<Users> {
-  //   const newUser = this.usersRepository.create({ name, lastname, email });
-  //   return this.usersRepository.save(newUser);
-  // }
   create({ user_id, title, description }: CreateFormDto) {
     // TODO: user_id obtenido de JWT token
     const newForm = this.formRepository.create({
