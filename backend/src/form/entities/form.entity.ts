@@ -30,3 +30,7 @@ export class Form {
   @JoinColumn({ name: 'user_id' }) // Specify the custom foreign key column name
   user: Users;
 }
+
+// https://docs.nestjs.com/techniques/database#example
+// https://typeorm.io/repository-api
+// https://docs.nestjs.com/controllers

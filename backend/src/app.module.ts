@@ -10,6 +10,7 @@ import { Form } from './form/entities/form.entity';
 import { DataSource } from 'typeorm';
 import { UsersModule } from './users/users.module';
 import { FormModule } from './form/form.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -20,11 +21,12 @@ import { FormModule } from './form/form.module';
       username: 'postgres',
       password: 'TryHackM3',
       database: 'rform',
-      entities: [Users, Form],
+      entities: [__dirname + '/**/**/*.entity.{js,ts}'],
       // synchronize: true,
     }),
     UsersModule,
     FormModule,
+    QuestionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
