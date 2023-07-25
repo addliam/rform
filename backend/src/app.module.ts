@@ -11,6 +11,7 @@ import { DataSource } from 'typeorm';
 import { UsersModule } from './users/users.module';
 import { FormModule } from './form/form.module';
 import { QuestionModule } from './question/question.module';
+import { ResponseModule } from './response/response.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { QuestionModule } from './question/question.module';
     UsersModule,
     FormModule,
     QuestionModule,
+    ResponseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
