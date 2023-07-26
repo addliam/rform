@@ -1,6 +1,7 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -18,5 +19,6 @@ export class AuthController {
     return {
       access_token: token,
     };
+    // TODO: return cookie | redirect to frontend /?jwt=<jwt-token>
   }
 }

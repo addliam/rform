@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ResponseService } from './response.service';
 import { CreateResponseDto } from './dto/create-response.dto';
 import { UpdateResponseDto } from './dto/update-response.dto';
@@ -12,9 +23,11 @@ export class ResponseController {
     return this.responseService.create(createResponseDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.responseService.findAll();
+  findAll(@Request() req) {
+    const user = req.user;
+    return { response: 'Yes you are allowed', user };
   }
 
   @Get(':id')
@@ -23,7 +36,10 @@ export class ResponseController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateResponseDto: UpdateResponseDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateResponseDto: UpdateResponseDto,
+  ) {
     return this.responseService.update(+id, updateResponseDto);
   }
 

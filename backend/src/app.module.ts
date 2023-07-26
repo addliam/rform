@@ -12,11 +12,13 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 // googlestrategy for auth
 import { GoogleStrategy } from './google.strategy';
-import { JwtService } from '@nestjs/jwt/dist';
+import { JwtService } from '@nestjs/jwt';
+
 @Module({
   imports: [
     // ConfigModule relies on dotenv
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
+    // Prefered to use dotenv since on other modules it wont load env
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
