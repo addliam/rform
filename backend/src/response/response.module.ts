@@ -3,10 +3,16 @@ import { ResponseService } from './response.service';
 import { ResponseController } from './response.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Response } from './entities/response.entity';
+import { Form } from 'src/form/entities/form.entity';
+import { FormService } from 'src/form/form.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Response])],
+  // entity for response and form
+  imports: [
+    TypeOrmModule.forFeature([Response]),
+    TypeOrmModule.forFeature([Form]),
+  ],
   controllers: [ResponseController],
-  providers: [ResponseService],
+  providers: [ResponseService, FormService],
 })
 export class ResponseModule {}

@@ -30,9 +30,12 @@ export class ResponseController {
     return { response: 'Yes you are allowed', user };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.responseService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req) {
+    // jwt parsing returns userId and email
+    const userId = req.user.userId;
+    return this.responseService.findOne(+id, userId);
   }
 
   @Patch(':id')

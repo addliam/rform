@@ -26,11 +26,11 @@ export class FormService {
     return this.formRepository.find();
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     // return all belong to author id
     const num = Number(id);
     if (num) {
-      return this.formRepository.findBy({ user_id: num });
+      return await this.formRepository.findBy({ user_id: num });
     } else {
       return [];
     }
@@ -38,6 +38,14 @@ export class FormService {
 
   update(id: number, updateFormDto: UpdateFormDto) {
     return `This action updates a #${id} form`;
+  }
+
+  async userOwnsForm(userId: string, formId: number): Promise<boolean> {
+    // check if users owns a form
+    const formExist = await this.formRepository.findOne({
+      where: { form_id: formId, user_id: +userId },
+    });
+    return formExist ? true : false;
   }
 
   remove(id: number) {
