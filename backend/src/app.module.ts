@@ -12,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 // googlestrategy for auth
 import { GoogleStrategy } from './google.strategy';
-
+import { JwtService } from '@nestjs/jwt/dist';
 @Module({
   imports: [
     // ConfigModule relies on dotenv
@@ -34,7 +34,7 @@ import { GoogleStrategy } from './google.strategy';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, GoogleStrategy],
+  providers: [AppService, GoogleStrategy, JwtService],
 })
 export class AppModule {
   // DataSource and EntityManager objects will be available to inject across the entire project (without needing to import any modules)

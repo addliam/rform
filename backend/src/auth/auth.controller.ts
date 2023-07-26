@@ -12,7 +12,11 @@ export class AuthController {
 
   @Get('redirect')
   @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req) {
-    return this.authService.googleLogin(req);
+  async googleAuthRedirect(@Req() req) {
+    // equivalent to "signIn" on tutorial
+    const token = await this.authService.googleLogin(req);
+    return {
+      access_token: token,
+    };
   }
 }
