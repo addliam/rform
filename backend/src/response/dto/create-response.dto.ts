@@ -5,6 +5,21 @@ interface QuestionResponse {
 
 export class CreateResponseDto {
   form_id: number;
-  user_id: number;
   response_data: QuestionResponse[];
 }
+
+/*
+{
+  "form_id": 4,
+  "response_data": [
+      {
+        "qid": 1,
+        "choice": [0]
+      },
+      {
+        "qid": 2,
+        "choice": [1]
+      } 
+  ]
+}
+*/

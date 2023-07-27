@@ -18,9 +18,21 @@ import { UpdateResponseDto } from './dto/update-response.dto';
 export class ResponseController {
   constructor(private readonly responseService: ResponseService) {}
 
+  /**
+   * POST /response/
+   * Create a new response entry.
+   *
+   * @tags Response
+   *
+   * @requestBody {CreateResponseDto} application/json
+   * @returns {Form} 201 - Successfully created form
+   * @throws {401} - Unauthorized
+   */
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createResponseDto: CreateResponseDto) {
-    return this.responseService.create(createResponseDto);
+  async create(@Body() createResponseDto: CreateResponseDto, @Request() req) {
+    const userId = req.user.userId;
+    return await this.responseService.create(createResponseDto, userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -30,12 +42,21 @@ export class ResponseController {
     return { response: 'Yes you are allowed', user };
   }
 
+  /**
+   * GET /response/form/<form-id>
+   * Obtain all responses by form id. Requires to be owner of the form.
+   *
+   * @tags Response
+   *
+   * @returns {Response[]} 200 - List of responses
+   * @throws {401} - Unauthorized
+   */
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string, @Request() req) {
+  @Get('/form/:id')
+  findAllByFormId(@Param('id') id: string, @Request() req) {
     // jwt parsing returns userId and email
     const userId = req.user.userId;
-    return this.responseService.findOne(+id, userId);
+    return this.responseService.findAllByFormId(+id, userId);
   }
 
   @Patch(':id')

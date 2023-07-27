@@ -28,6 +28,10 @@ export class FormService {
     return this.formRepository.find();
   }
 
+  async findBySlug(slug: string) {
+    return await this.formRepository.findOne({ where: { slug } });
+  }
+
   async findOne(id: number) {
     // return all belong to author id
     const num = Number(id);

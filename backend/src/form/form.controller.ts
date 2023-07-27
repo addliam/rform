@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseGuards,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { FormService } from './form.service';
 import { CreateFormDto } from './dto/create-form.dto';
@@ -46,8 +47,25 @@ export class FormController {
     return this.formService.findAll();
   }
 
+  /**
+   * GET /u/<slug>
+   * Get form by slug.
+   *
+   * @tags Form
+   *
+   * @param {string} slug - Slug unique identifier.
+   */
+  @Get('u/:slug')
+  async getFormBySlug(@Param('slug') slug: string) {
+    const form = await this.formService.findBySlug(slug);
+    if (!form) {
+      throw new NotFoundException('Form not found');
+    }
+    return form;
+  }
+
   @Get(':id/questions')
-  // ParseIntPipe returns 500, might no ve enough verbose
+  // ParseIntPipe returns 500, might no be enough verbose
   findAllQuestions(@Param('id', ParseIntPipe) id: number) {
     return this.questionService.getQuestionsByFormId(id);
   }

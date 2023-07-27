@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 // googlestrategy for auth
 import { GoogleStrategy } from './google.strategy';
 import { JwtService } from '@nestjs/jwt';
+import { ResultModule } from './result/result.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { JwtService } from '@nestjs/jwt';
     QuestionModule,
     ResponseModule,
     AuthModule,
+    ResultModule,
   ],
   controllers: [AppController],
   providers: [AppService, GoogleStrategy, JwtService],
