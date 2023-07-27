@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { FormService } from './form.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
 import { QuestionService } from 'src/question/question.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('form')
 export class FormController {
@@ -20,9 +23,22 @@ export class FormController {
     private readonly questionService: QuestionService,
   ) {}
 
+  /**
+   * POST /form/
+   * Create a new form.
+   *
+   * @tags Form
+   *
+   * @param {CreateUserDto} user - Form data.
+   * @requestBody {CreateUserDto} application/json
+   * @returns {Form} 201 - Successfully created form
+   * @throws {401} - Unauthorized
+   */
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createFormDto: CreateFormDto) {
-    return this.formService.create(createFormDto);
+  create(@Body() createFormDto: CreateFormDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.formService.create(createFormDto, userId);
   }
 
   @Get()

@@ -4,6 +4,7 @@ import { UpdateFormDto } from './dto/update-form.dto';
 import { Form } from './entities/form.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class FormService {
@@ -12,12 +13,13 @@ export class FormService {
     private formRepository: Repository<Form>,
   ) {}
 
-  create({ user_id, title, description }: CreateFormDto) {
-    // TODO: user_id obtenido de JWT token
+  create({ title, description }: CreateFormDto, user_id: string) {
+    const uniqueSlug = uuidv4();
     const newForm = this.formRepository.create({
-      user_id: 1,
+      user_id: +user_id,
       title,
       description,
+      slug: uniqueSlug,
     });
     return this.formRepository.save(newForm);
   }
