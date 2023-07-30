@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards, Request, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -13,12 +13,15 @@ export class AuthController {
 
   @Get('redirect')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req) {
-    // equivalent to "signIn" on tutorial
+  async googleAuthRedirect(@Req() req, @Res({ passthrough: true }) res) {
     const token = await this.authService.googleLogin(req);
-    return {
-      access_token: token,
-    };
+    const redirectUrl = `${process.env.FRONTEND_URL}/auth`;
+    res.cookie('jwtToken', token, {
+      httpOnly: true,
+      secure: false,
+    });
+    res.redirect(redirectUrl);
+
     // TODO: return cookie | redirect to frontend /?jwt=<jwt-token>
   }
 }
