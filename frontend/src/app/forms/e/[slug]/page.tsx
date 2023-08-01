@@ -6,15 +6,23 @@ import useAuthToken from "@/hooks/useAuthToken";
 import Form from "@/interfaces/Form";
 import { v4 as uuidv4 } from "uuid";
 
+interface LettersMap {
+  [key: number]: string;
+}
+const lettersMap: LettersMap = {
+  1: "a",
+  2: "b",
+  3: "c",
+  4: "d",
+  5: "e",
+  6: "f",
+};
+
 interface EditableData {
   title: string;
   description: string;
 }
 
-interface Alternative {
-  id: string;
-  value: string;
-}
 interface Alternatives {
   id: string;
   value: string;
@@ -34,24 +42,13 @@ export default function EditFormsPage({
 }: {
   params: { slug: string };
 }) {
-  const [editableData, setEditableData] = useState<EditableData | null>(null);
+  const [titleDescriptionData, setTitleDescriptionData] =
+    useState<EditableData | null>(null);
   const [formData, setFormData] = useState<Form | null>(null);
-  const [numberQuestions, setNumberQuestions] = useState<number>(0);
-  const [trigger, setTrigger] = useState<boolean>(false);
-  const [inputs, setInputs] = useState<Question[]>([
-    {
-      id: "1234-4321",
-      text: "test",
-      list: [
-        { id: "2234", value: "a" },
-        { id: "2231", value: "b" },
-        { id: "2232", value: "c" },
-        { id: "2230", value: "d" },
-      ],
-    },
-  ]);
+  const [inputs, setInputs] = useState<Question[]>([]);
 
   const accessToken = useAuthToken();
+  // TODO: Query all questions already exist on form
   useEffect(() => {
     const headers = {
       headers: {
@@ -65,7 +62,7 @@ export default function EditFormsPage({
       )
       .then((res) => {
         setFormData(res.data);
-        setEditableData({
+        setTitleDescriptionData({
           title: res.data.title,
           description: res.data.description,
         });
@@ -75,50 +72,79 @@ export default function EditFormsPage({
   }, []);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (editableData !== null) {
-      setEditableData((prev) => ({
+    if (titleDescriptionData !== null) {
+      setTitleDescriptionData((prev) => ({
         ...(prev as EditableData),
         title: e.target.value,
       }));
     }
   };
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (editableData !== null) {
-      setEditableData((prev) => ({
+    if (titleDescriptionData !== null) {
+      setTitleDescriptionData((prev) => ({
         ...(prev as EditableData),
         description: e.target.value,
       }));
     }
   };
-
   const saveAction = () => {
     console.log("---------------------------------------");
 
-    if (editableData) {
-      console.log(editableData.title, " ", editableData.description);
+    if (titleDescriptionData) {
+      console.log(
+        titleDescriptionData.title,
+        " ",
+        titleDescriptionData.description
+      );
     }
     console.log(`Logging all Question inner info`);
     console.log(inputs);
-
-    // setTrigger(true);
-    // // switch 'off'
-    // setTimeout(() => {
-    //   setTrigger(false);
-    // }, 10);
   };
 
   const handleAddQuestion = () => {
     // here instantiate default value
+    // Make POST req w default values
+    // const a =
+    if (!formData) {
+      console.log(`FormData is empty not loaded id`);
+    } else {
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      const data = {
+        form_id: formData.form_id,
+        question_text: "Pregunta",
+        question_type: "multiple_choice",
+        puntuation: 10,
+        options: {
+          choices: ["Alternativa", "Alternativa", "Alternativa", "Alternativa"],
+          correct_answers: [0],
+        },
+        constraints: {
+          required: true,
+        },
+      };
+      axios
+        .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/question`, data, headers)
+        .then((res) => {
+          console.log(res.data);
+          setFormData(res.data);
+        })
+        .catch((err) => console.error(err));
+    }
+
     setInputs((prev) => [
       ...(prev as Question[]),
       {
         id: uuidv4(),
         text: "question",
         list: [
-          { id: "1231", value: "a" },
-          { id: "1232", value: "b" },
-          { id: "1233", value: "c" },
-          { id: "1234", value: "d" },
+          { id: "1231", value: "alternativa" },
+          { id: "1232", value: "alternativa" },
+          { id: "1233", value: "alternativa" },
+          { id: "1234", value: "alternativa" },
         ],
       },
     ]);
@@ -167,7 +193,7 @@ export default function EditFormsPage({
 
   return (
     <div>
-      {editableData ? (
+      {titleDescriptionData ? (
         <>
           <Stack
             gap={3}
@@ -184,7 +210,7 @@ export default function EditFormsPage({
                   }}
                   onChange={(e) => handleTitleChange(e)}
                   type="text"
-                  value={editableData.title}
+                  value={titleDescriptionData.title}
                   disabled={false}
                 />
               </div>
@@ -201,7 +227,7 @@ export default function EditFormsPage({
                   }}
                   onChange={(e) => handleDescriptionChange(e)}
                   type="text"
-                  value={editableData.description}
+                  value={titleDescriptionData.description}
                   disabled={false}
                 />
               </div>
@@ -210,58 +236,50 @@ export default function EditFormsPage({
           </Stack>
 
           <Container className="mt-4">
-            <div>
-              {inputs.map((input: Question) => {
+            <Stack direction="vertical" gap={5}>
+              {inputs.map((input: Question, indx: number) => {
                 return (
-                  <div
-                    key={input.id}
-                    style={{
-                      borderColor: "red",
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <input
-                      key={input.id}
-                      type="text"
-                      name="text"
-                      id={input.id}
-                      value={input.text}
-                      onChange={(e) => handleInputChange(e, "text")}
-                    />
+                  <Stack direction="vertical" gap={2} key={input.id}>
+                    <Stack direction="horizontal" gap={2}>
+                      <label htmlFor="question">{indx + 1}.-</label>
+                      <input
+                        key={input.id}
+                        type="text"
+                        name="text"
+                        id={input.id}
+                        value={input.text}
+                        onChange={(e) => handleInputChange(e, "text")}
+                      />
+                    </Stack>
                     <div>
-                      {input.list.map(
-                        (listElement: Alternatives, indx: number) => (
-                          <div
-                            key={`${input.id}-list-${indx}`}
-                            style={{
-                              borderColor: "yellow",
-                              borderWidth: "1px",
-                              borderStyle: "solid",
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
-                            <input
-                              key={`${listElement.id}`}
-                              type="text"
-                              name="list-text"
-                              id={listElement.id}
-                              value={listElement.value}
-                              onChange={(e) =>
-                                handleInnerInputChange(e, input.id)
-                              }
-                            />
-                          </div>
-                        )
-                      )}
+                      <Stack className="mt-2" gap={2}>
+                        {input.list.map(
+                          (listElement: Alternatives, indx: number) => (
+                            <Stack
+                              key={`${listElement.id}-list-${indx}`}
+                              direction="horizontal"
+                              gap={2}
+                            >
+                              <label>{lettersMap[indx + 1]})</label>
+                              <input
+                                key={`${listElement.id}`}
+                                type="text"
+                                name="list-text"
+                                id={listElement.id}
+                                value={listElement.value}
+                                onChange={(e) =>
+                                  handleInnerInputChange(e, input.id)
+                                }
+                              />
+                            </Stack>
+                          )
+                        )}
+                      </Stack>
                     </div>
-                  </div>
+                  </Stack>
                 );
               })}
-            </div>
+            </Stack>
           </Container>
 
           <Container className="mt-4">

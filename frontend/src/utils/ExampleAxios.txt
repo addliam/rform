@@ -1,5 +1,4 @@
   const accessToken = useAuthToken();
-  useEffect(() => {
     const headers = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
