@@ -1,0 +1,17 @@
+  const accessToken = useAuthToken();
+  useEffect(() => {
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/form/u/${params.slug}`,
+        headers
+      )
+      .then((res) => {
+        console.log(res.data);
+        setFormData(res.data);
+      })
+      .catch((err) => console.error(err));
