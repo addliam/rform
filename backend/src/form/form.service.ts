@@ -28,6 +28,10 @@ export class FormService {
     return this.formRepository.find();
   }
 
+  async findAllOwnedByMe(userId: number) {
+    return await this.formRepository.find({ where: { user_id: userId } });
+  }
+
   async findBySlug(slug: string) {
     return await this.formRepository.findOne({ where: { slug } });
   }

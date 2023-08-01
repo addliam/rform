@@ -42,9 +42,11 @@ export class FormController {
     return this.formService.create(createFormDto, userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.formService.findAll();
+  findAllOwnedByMe(@Request() req) {
+    const userId = req.user.userId;
+    return this.formService.findAllOwnedByMe(userId);
   }
 
   /**
