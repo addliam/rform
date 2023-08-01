@@ -4,16 +4,26 @@ import { Col, Container, Row, Button, Stack } from "react-bootstrap";
 import axios from "axios";
 import useAuthToken from "@/hooks/useAuthToken";
 import Form from "@/interfaces/Form";
-import Question from "./Question";
+import { v4 as uuidv4 } from "uuid";
 
 interface EditableData {
   title: string;
   description: string;
 }
 
-interface QuestionProps {
-  question: string;
-  alternatives: string[];
+interface Alternative {
+  id: string;
+  value: string;
+}
+interface Alternatives {
+  id: string;
+  value: string;
+}
+
+export interface Question {
+  id: string;
+  text: string;
+  list: Alternatives[];
 }
 
 /*
@@ -26,7 +36,20 @@ export default function EditFormsPage({
 }) {
   const [editableData, setEditableData] = useState<EditableData | null>(null);
   const [formData, setFormData] = useState<Form | null>(null);
-  const [questionsData, setQuestionsData] = useState<QuestionProps[]>([]);
+  const [numberQuestions, setNumberQuestions] = useState<number>(0);
+  const [trigger, setTrigger] = useState<boolean>(false);
+  const [inputs, setInputs] = useState<Question[]>([
+    {
+      id: "1234-4321",
+      text: "test",
+      list: [
+        { id: "2234", value: "a" },
+        { id: "2231", value: "b" },
+        { id: "2232", value: "c" },
+        { id: "2230", value: "d" },
+      ],
+    },
+  ]);
 
   const accessToken = useAuthToken();
   useEffect(() => {
@@ -69,23 +92,77 @@ export default function EditFormsPage({
   };
 
   const saveAction = () => {
-    console.log("Guardando... ");
+    console.log("---------------------------------------");
+
     if (editableData) {
       console.log(editableData.title, " ", editableData.description);
     }
+    console.log(`Logging all Question inner info`);
+    console.log(inputs);
+
+    // setTrigger(true);
+    // // switch 'off'
+    // setTimeout(() => {
+    //   setTrigger(false);
+    // }, 10);
   };
 
-  const addQuestion = () => {
-    const defaultQuestionData: QuestionProps = {
-      question: "Escribe tu pregunta",
-      alternatives: [
-        "Alternativa",
-        "Alternativa",
-        "Alternativa",
-        "Alternativa",
-      ],
-    };
-    setQuestionsData((prevData) => [...prevData, defaultQuestionData]);
+  const handleAddQuestion = () => {
+    // here instantiate default value
+    setInputs((prev) => [
+      ...(prev as Question[]),
+      {
+        id: uuidv4(),
+        text: "question",
+        list: [
+          { id: "1231", value: "a" },
+          { id: "1232", value: "b" },
+          { id: "1233", value: "c" },
+          { id: "1234", value: "d" },
+        ],
+      },
+    ]);
+  };
+
+  const handleInnerInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    inputId: string
+  ) => {
+    const inputValue = event.target.value;
+    const id = event.target.id;
+    // inputs[0].list[0].value
+    setInputs((prevInputs) =>
+      prevInputs.map((input) =>
+        input.id === inputId
+          ? {
+              ...input,
+              list: input.list.map((innerInput: Alternatives) =>
+                innerInput.id === id
+                  ? { ...innerInput, value: inputValue }
+                  : innerInput
+              ),
+            }
+          : input
+      )
+    );
+  };
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    fieldname: string
+  ) => {
+    const inputValue = event.target.value;
+    const id = event.target.id;
+    // search through the inputs and edit the value. if ids is equal so FOUND
+    // once found destructurate others values and edit FIELDNAME to new value
+    setInputs((prevInputs) =>
+      prevInputs.map((input) =>
+        input.id === id
+          ? { ...(input as Question), [fieldname]: inputValue }
+          : input
+      )
+    );
+    console.log(inputValue, " -> ", id);
   };
 
   return (
@@ -133,19 +210,70 @@ export default function EditFormsPage({
           </Stack>
 
           <Container className="mt-4">
+            <div>
+              {inputs.map((input: Question) => {
+                return (
+                  <div
+                    key={input.id}
+                    style={{
+                      borderColor: "red",
+                      borderWidth: "1px",
+                      borderStyle: "solid",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <input
+                      key={input.id}
+                      type="text"
+                      name="text"
+                      id={input.id}
+                      value={input.text}
+                      onChange={(e) => handleInputChange(e, "text")}
+                    />
+                    <div>
+                      {input.list.map(
+                        (listElement: Alternatives, indx: number) => (
+                          <div
+                            key={`${input.id}-list-${indx}`}
+                            style={{
+                              borderColor: "yellow",
+                              borderWidth: "1px",
+                              borderStyle: "solid",
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <input
+                              key={`${listElement.id}`}
+                              type="text"
+                              name="list-text"
+                              id={listElement.id}
+                              value={listElement.value}
+                              onChange={(e) =>
+                                handleInnerInputChange(e, input.id)
+                              }
+                            />
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Container>
+
+          <Container className="mt-4">
             <Row>
               <Col>
-                <Button onClick={() => addQuestion()} variant="success">
+                <Button onClick={() => handleAddQuestion()} variant="success">
                   {" "}
                   + Agregar pregunta
                 </Button>
               </Col>
             </Row>
           </Container>
-
-          {questionsData.map((value, indx) => (
-            <Question data={value} />
-          ))}
 
           <Container className="mt-4">
             <Row>
